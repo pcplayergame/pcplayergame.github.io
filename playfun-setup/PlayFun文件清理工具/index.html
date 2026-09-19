@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>安装包仓库</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234F6EF7'/%3E%3Cpath d='M32 18v20M24 30l8 8 8-8' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Crect x='16' y='44' width='32' height='4' rx='2' fill='white'/%3E%3C/svg%3E" />
+<style>
+  :root {
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --primary: #4f6ef7;
+    --primary-dark: #3b55d9;
+    --border: #e5e7eb;
+    --shadow: 0 2px 8px rgba(31, 41, 55, 0.06);
+    --shadow-lg: 0 8px 24px rgba(79, 110, 247, 0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+  }
+
+  /* ===== 顶部 ===== */
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .logo-badge {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6b8af9, #4f6ef7);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-lg);
+  }
+  .logo-badge svg { width: 24px; height: 24px; color: #fff; }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  /* ===== 列表 ===== */
+  .item-list { display: flex; flex-direction: column; gap: 12px; }
+  .item {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: transform .15s, box-shadow .15s;
+    cursor: pointer;
+  }
+  .item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(31, 41, 55, 0.08);
+  }
+  .item:hover .item-title { color: var(--primary); }
+  .item:hover .btn-download { background: var(--primary); color: #fff; }
+  .item-icon {
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: rgba(79, 110, 247, 0.1);
+    color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .item-icon svg { width: 20px; height: 20px; }
+  .item-body { flex: 1; min-width: 0; }
+  .item-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    transition: color .15s;
+  }
+  .btn-download {
+    flex-shrink: 0;
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background .15s, color .15s;
+  }
+  .btn-download svg { width: 14px; height: 14px; }
+
+  /* ===== 空状态 ===== */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.5; }
+  .empty p { font-size: 14px; }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 520px) {
+    .container { padding: 20px 14px 60px; }
+    h1 { font-size: 22px; }
+    .item { padding: 14px 16px; }
+    .btn-download { padding: 7px 14px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ===== 顶部标题 ===== -->
+  <header>
+    <div class="logo">
+      <div class="logo-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+      </div>
+      <h1>安装包仓库</h1>
+    </div>
+  </header>
+
+  <!-- ===== 列表 ===== -->
+  <div class="item-list" id="itemList"></div>
+
+</div>
+
+<script>
+/* ============================================================
+ *  蓝奏云链接列表：在这里增删
+ *  每行就是一个链接，页面自动显示为"蓝奏云"
+ * ============================================================ */
+const LINKS = [
+  // 在这里添加蓝奏云链接，例如：
+  // "https://xxx.lanzou.com/xxxx"
+];
+
+/* ============================================================
+ *  以下为渲染逻辑，一般不需要改动
+ * ============================================================ */
+(function () {
+  const listEl = document.getElementById("itemList");
+
+  function escapeHtml(s) {
+    return String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function render() {
+    if (LINKS.length === 0) {
+      listEl.innerHTML = `
+        <div class="empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <p>暂无链接</p>
+        </div>`;
+      return;
+    }
+
+    listEl.innerHTML = LINKS.map((url, i) => `
+      <div class="item" data-url="${escapeHtml(url)}">
+        <div class="item-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </div>
+        <div class="item-body">
+          <div class="item-title">蓝奏云</div>
+        </div>
+        <button class="btn-download">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          下载
+        </button>
+      </div>
+    `).join("");
+  }
+
+  // 点击跳转
+  listEl.addEventListener("click", function (e) {
+    const item = e.target.closest(".item");
+    if (!item) return;
+    const url = item.dataset.url;
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
