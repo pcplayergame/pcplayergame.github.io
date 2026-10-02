@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>下载示例</title>
+<style>
+#toast {
+  display: none;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  background: #222;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+  font-family: sans-serif;
+}
+</style>
+</head>
+<body>
+
+<!-- 方法 A：普通链接（用户点击时浏览器会处理下载） -->
+<p>
+  <a id="simple" href="/downloads/myfile.zip" download>点击这里下载 myfile.zip（方法 A）</a>
+</p>
+
+<!-- 方法 B：用 JS 触发并立刻显示提示 -->
+<p>
+  <button id="jsDownload">点击这里下载 myfile.zip（方法 B）</button>
+</p>
+
+<div id="toast">文件已经开始下载！</div>
+
+<script>
+function showToast(text = '文件已经开始下载！', ms = 3500) {
+  const t = document.getElementById('toast');
+  t.textContent = text;
+  t.style.display = 'block';
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(() => { t.style.display = 'none'; }, ms);
+}
+
+// 方法 A: 点击链接时立刻显示提示（不阻止默认行为）
+document.getElementById('simple').addEventListener('click', () => {
+  showToast();
+});
+
+// 方法 B: 用 JS 创建隐藏的 a 元素并 programmatic click，适合在按钮上控制
+document.getElementById('jsDownload').addEventListener('click', () => {
+  const url = '/downloads/PlayFun-Power-REC-zh-CN-Installer.zip'; // 修改为你实际文件路径
+  const filename = 'PlayFun-Power-REC-zh-CN-Installer.zip';       // 下载时建议的文件名（可选）
+  // 立刻显示提示
+  showToast();
+  // 创建隐藏的链接并点击以触发浏览器下载（不会在 JS 中先把整个文件拉下来）
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  // 必要时设置 target 以兼容某些浏览器行为
+  a.target = '_blank';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
+</script>
+</body>
+</html>
