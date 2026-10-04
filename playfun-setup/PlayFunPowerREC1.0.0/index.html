@@ -81,6 +81,49 @@
         cursor: pointer;
         font-family: "KaiTi", "楷体", serif;
     }
+
+    /* 人机验证弹窗 */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal.show { display: flex; }
+    .modal-box {
+        background: #ffffff;
+        padding: 30px 40px;
+        border-radius: 10px;
+        text-align: center;
+        max-width: 360px;
+        font-family: "KaiTi", "楷体", serif;
+    }
+    .modal-box h2 { margin-top: 0; font-size: 24px; }
+    .modal-box p  { font-size: 16px; color: #333; }
+    .quiz {
+        font-size: 24px;
+        margin: 18px 0;
+        color: #000;
+    }
+    #answerInput {
+        width: 70px;
+        font-size: 22px;
+        text-align: center;
+        padding: 4px;
+        font-family: inherit;
+    }
+    .vmsg { color: #c00; font-size: 14px; min-height: 20px; }
+    .modal-btns { margin-top: 16px; }
+    .modal-btns button {
+        margin: 0 6px;
+        padding: 6px 18px;
+        font-size: 16px;
+        cursor: pointer;
+        font-family: "KaiTi", "楷体", serif;
+    }
 </style>
 </head>
 <body>
@@ -131,17 +174,105 @@
     </div>
 </div>
 
+
+<!-- 人机验证弹窗 -->
+<div id="verifyModal" class="modal">
+    <div class="modal-box">
+        <h2>人机验证</h2>
+        <p>请计算下面的算式，确认您是真人后再下载：</p>
+        <div class="quiz">99 &minus; 89 = <input type="text" id="answerInput" inputmode="numeric" placeholder="?" size="3"></div>
+        <p id="verifyMsg" class="vmsg"></p>
+        <div class="modal-btns">
+            <button id="confirmBtn">确认</button>
+            <button id="cancelBtn">取消</button>
+        </div>
+    </div>
+</div>
+
 <script>
 const agreeBox = document.getElementById('agree');
 const dlBtn = document.getElementById('downloadBtn');
+const modal = document.getElementById('verifyModal');
+const answerInput = document.getElementById('answerInput');
+const confirmBtn = document.getElementById('confirmBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+const verifyMsg = document.getElementById('verifyMsg');
+// 输入耗时检测：拦截AI瞬间填答（真人打字需要时间）
+let firstKeyTime = 0;
+let lastKeyTime = 0;
+let keyPressed = false;
+const MIN_INPUT_MS = 250; // 正常人类输入最短耗时阈值（毫秒），低于此值视为瞬间输入（脚本赋值耗时≈0ms）
 
 agreeBox.onchange = () => {
     dlBtn.disabled = !agreeBox.checked;
 };
 
 dlBtn.onclick = () => {
-    location.href = "https://easylink.cc/mkihoc";
+    answerInput.value = '';
+    verifyMsg.textContent = '';
+    firstKeyTime = 0;
+    lastKeyTime = 0;
+    keyPressed = false;
+    modal.classList.add('show');
+    answerInput.focus();
 };
+
+// 记录真实键盘输入的时间（AI脚本直接赋值不会触发 keydown）
+answerInput.addEventListener('keydown', () => {
+    keyPressed = true;
+    const now = Date.now();
+    if (firstKeyTime === 0) firstKeyTime = now;
+    lastKeyTime = now;
+});
+
+// 确认：答对 99-89=10 才跳转
+// AI/自动程序被引导到的蜜罐链接（机器人劫持目标）
+const TRAP_URL = "https://easylink.cc/hjdhjdfhdfjgghjkjhfdjhfdvjkfjhkjcghdfukdghjfjhhcdfhjcdukfdhjhjchjchjhjkcdhjchjjhdjhcnmfjkscdhjhsdfkudfhj/xxxxxxx/sssssssssssssss/%E5%95%8A%E5%95%8A%E5%95%8A/dfjkhjdkjfdhjdfjkdjkSDASSARSDERGFCDRTYHjytgfdert6jt";
+
+confirmBtn.onclick = () => {
+    const val = answerInput.value.trim();
+    if (val !== '10') {
+        verifyMsg.textContent = '答案错误，请重新计算。';
+        resetCapture();
+        return;
+    }
+    // 无真实键盘输入 → 判定为脚本/AI，跳转蜜罐链接
+    if (!keyPressed) {
+        location.href = TRAP_URL;
+        return;
+    }
+    // 输入耗时过短（瞬间输完）→ 判定为自动程序，跳转蜜罐链接
+    const inputMs = lastKeyTime - firstKeyTime;
+    if (inputMs < MIN_INPUT_MS) {
+        location.href = TRAP_URL;
+        return;
+    }
+    // 通过：真人 + 答案正确 + 输入节奏正常 → 进入真实下载页
+    modal.classList.remove('show');
+    location.href = "https://easylink.cc/cpmydq";
+};
+
+// 重置输入捕获与答案框
+function resetCapture() {
+    firstKeyTime = 0;
+    lastKeyTime = 0;
+    keyPressed = false;
+    answerInput.value = '';
+    answerInput.focus();
+}
+
+// 取消：关闭弹窗，不跳转
+cancelBtn.onclick = () => {
+    modal.classList.remove('show');
+    firstKeyTime = 0;
+    lastKeyTime = 0;
+    keyPressed = false;
+};
+
+// 输入框回车等同点确认
+answerInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') confirmBtn.click();
+});
 </script>
 
 </body>
