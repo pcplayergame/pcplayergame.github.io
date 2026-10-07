@@ -17,6 +17,18 @@
     --shadow: 0 2px 8px rgba(31, 41, 55, 0.06);
     --shadow-lg: 0 8px 24px rgba(79, 110, 247, 0.12);
   }
+  /* 暗色主题变量 */
+  [data-theme="dark"] {
+    --bg: #111827;
+    --card: #1f2937;
+    --text: #f3f4f6;
+    --muted: #9ca3af;
+    --primary: #637df9;
+    --primary-dark: #4f6ef7;
+    --border: #374151;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    --shadow-lg: 0 8px 24px rgba(79, 110, 247, 0.15);
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
@@ -26,17 +38,22 @@
     color: var(--text);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.25s, color 0.25s;
   }
   .container {
     max-width: 880px;
     margin: 0 auto;
     padding: 32px 20px 80px;
   }
-
   /* ===== 顶部 ===== */
   header {
     text-align: center;
     margin-bottom: 24px;
+  }
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
   }
   .logo {
     display: inline-flex;
@@ -62,7 +79,17 @@
     font-size: 14px;
     margin-top: 6px;
   }
-
+  /* ===== 主题切换下拉框 ===== */
+  .theme-select {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--text);
+    font-size:14px;
+    outline:none;
+    cursor:pointer;
+  }
   /* ===== 搜索 ===== */
   .search-wrap {
     position: relative;
@@ -86,12 +113,12 @@
     box-shadow: var(--shadow);
     outline: none;
     transition: border-color .15s, box-shadow .15s;
+    color: var(--text);
   }
   #searchInput:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.15);
   }
-
   /* ===== 列表 ===== */
   .list-head {
     display: flex;
@@ -101,7 +128,6 @@
   }
   .list-head h2 { font-size: 15px; font-weight: 600; }
   .list-head .count { font-size: 12px; color: var(--muted); }
-
   .item-list { display: flex; flex-direction: column; gap: 12px; }
   .item {
     background: var(--card);
@@ -143,7 +169,6 @@
     display: flex; align-items: center; gap: 6px;
   }
   .item-meta svg { width: 13px; height: 13px; }
-
   /* ===== 空状态 ===== */
   .empty {
     text-align: center;
@@ -152,10 +177,10 @@
   }
   .empty svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.5; }
   .empty p { font-size: 14px; }
-
   /* ===== 响应式 ===== */
   @media (max-width: 520px) {
     .container { padding: 20px 14px 60px; }
+    .header-row { flex-direction: column; gap:12px; align-items:center; }
     h1 { font-size: 22px; }
     .item { padding: 14px; }
     #searchInput { font-size: 16px; }
@@ -164,20 +189,27 @@
 </head>
 <body>
 <div class="container">
-
-  <!-- ===== 顶部标题 ===== -->
+  <!-- ===== 顶部标题 + 主题选择下拉 ===== -->
   <header>
-    <div class="logo">
-      <div class="logo-badge">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="6 3 20 12 6 21 6 3"></polygon>
-        </svg>
+    <div class="header-row">
+      <div>
+        <div class="logo">
+          <div class="logo-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="6 3 20 12 6 21 6 3"></polygon>
+            </svg>
+          </div>
+          <h1>PlayFun产品大厅</h1>
+        </div>
+        <p class="subtitle">https://pcplayergame.github.io/playfun-setup/</p>
       </div>
-      <h1>PlayFun 产品大厅</h1>
+      <select id="themeSelect" class="theme-select">
+        <option value="system">跟随系统</option>
+        <option value="light">亮色</option>
+        <option value="dark">暗色</option>
+      </select>
     </div>
-    <p class="subtitle">按发布日期倒序展示</p>
   </header>
-
   <!-- ===== 搜索框 ===== -->
   <div class="search-wrap">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -186,16 +218,13 @@
     </svg>
     <input id="searchInput" type="text" placeholder="搜索链接或替代文字…" />
   </div>
-
   <!-- ===== 列表 ===== -->
   <div class="list-head">
-    <h2>已发布</h2>
+    <h2>已发布的产品</h2>
     <span class="count" id="countLabel"></span>
   </div>
   <div class="item-list" id="itemList"></div>
-
 </div>
-
 <script>
 /* ============================================================
  *  发布内容库：在这里增删条目
@@ -203,11 +232,40 @@
  *  页面会自动按 date 倒序（新的在前）展示
  * ============================================================ */
  const ITEMS = [
-  { url:"https://pcplayergame.github.io/playfun-setup/PlayFunPowerREC1.0.0", title:"PlayFun录屏", date: "2026-10-4" },
+  { url:"https://pcplayergame.github.io/playfun-setup/PlayFunPowerREC1.0.0", title:"PlayFun录屏", date: "2026-10-04" },
+  { url:"https://pcplayergame.github.io/playfun-setup/PlayFun文件清理工具", title: "PlayFun文件清理工具2026-26H1", date: "2026-10-08" },
 ];
- const ITEMS = [
-  { url:"https://pcplayergame.github.io/playfun-setup/PlayFun文件清理工具", title: "PlayFun文件清理工具2026-26H1", date: "2026-09-19" },
-];
+
+/* ========== 主题切换逻辑 ========== */
+const themeSelect = document.getElementById('themeSelect');
+// 获取保存的主题，默认system
+let currentTheme = localStorage.getItem('pf-theme') || 'system';
+themeSelect.value = currentTheme;
+
+function applyTheme(mode) {
+  if(mode === 'system') {
+    // 跟随系统偏好
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.removeAttribute('data-theme');
+    if(isDark) document.documentElement.setAttribute('data-theme','dark');
+  } else {
+    document.documentElement.setAttribute('data-theme', mode);
+  }
+}
+applyTheme(currentTheme);
+
+// 下拉切换事件
+themeSelect.addEventListener('change', e=>{
+  const val = e.target.value;
+  localStorage.setItem('pf-theme', val);
+  applyTheme(val);
+});
+// 监听系统主题自动变化（跟随系统模式下生效）
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{
+  if(localStorage.getItem('pf-theme') === 'system'){
+    applyTheme('system');
+  }
+});
 
 /* ============================================================
  *  以下为渲染逻辑，一般不需要改动
@@ -216,7 +274,6 @@
   const listEl = document.getElementById("itemList");
   const countEl = document.getElementById("countLabel");
   const searchInput = document.getElementById("searchInput");
-
   function escapeHtml(s) {
     return String(s || "")
       .replace(/&/g, "&amp;")
@@ -225,22 +282,17 @@
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
   }
-
   function render() {
     const keyword = searchInput.value.trim().toLowerCase();
-
     // 按发布日期倒序（ISO 字符串可直接比较）
     const sorted = ITEMS.slice().sort((a, b) => b.date.localeCompare(a.date));
-
     const filtered = keyword
       ? sorted.filter(it =>
           (it.title || "").toLowerCase().includes(keyword) ||
           (it.url || "").toLowerCase().includes(keyword)
         )
       : sorted;
-
     countEl.textContent = `共 ${filtered.length} 条`;
-
     if (filtered.length === 0) {
       listEl.innerHTML = `
         <div class="empty">
@@ -252,7 +304,6 @@
         </div>`;
       return;
     }
-
     listEl.innerHTML = filtered.map(it => `
       <div class="item" data-url="${escapeHtml(it.url)}">
         <div class="item-icon">
@@ -277,7 +328,6 @@
       </div>
     `).join("");
   }
-
   // 点击整个卡片跳转
   listEl.addEventListener("click", function (e) {
     const item = e.target.closest(".item");
@@ -285,7 +335,6 @@
     const url = item.dataset.url;
     if (url) window.open(url, "_blank", "noopener,noreferrer");
   });
-
   searchInput.addEventListener("input", render);
   render();
 })();
