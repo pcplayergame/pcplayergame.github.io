@@ -183,7 +183,7 @@
         margin-top: 26px;
       }
 
-      .tree-wrap {
+      .portal-panel {
         background: var(--glass);
         border: 1px solid var(--border);
         border-radius: 28px;
@@ -193,7 +193,7 @@
         padding: 18px 18px 22px;
       }
 
-      .tree-head {
+      .panel-head {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -201,7 +201,7 @@
         padding: 8px 10px 18px;
       }
 
-      .tree-head h2 {
+      .panel-head h2 {
         margin: 0;
         font-size: 1.06rem;
         letter-spacing: 0.02em;
@@ -219,44 +219,38 @@
         font-weight: 600;
       }
 
-      .nest {
-        position: relative;
+      .column-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 18px;
       }
 
-      .nest + .nest {
-        margin-top: 12px;
-      }
-
-      .node {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 14px;
-        padding: 16px 18px;
+      .portal-card {
+        background: rgba(255, 255, 255, 0.08);
         border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.1);
-        color: var(--text);
-        border-radius: 20px;
-        cursor: pointer;
-        text-align: left;
-        transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.02);
+        border-radius: 22px;
+        padding: 18px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+        transition: transform 0.2s ease, border-color 0.2s ease;
+        min-height: 210px;
+        display: flex;
+        flex-direction: column;
       }
 
-      .node:hover {
-        transform: translateY(-1px);
+      .portal-card:hover {
+        transform: translateY(-2px);
         border-color: rgba(107, 124, 255, 0.35);
       }
 
-      .node-main {
+      .portal-top {
         display: flex;
         align-items: center;
-        gap: 14px;
-        min-width: 0;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
       }
 
-      .icon {
+      .portal-icon {
         width: 42px;
         height: 42px;
         border-radius: 14px;
@@ -264,72 +258,62 @@
         display: grid;
         place-items: center;
         color: white;
-        font-size: 1.05rem;
         font-weight: 700;
+        font-size: 0.96rem;
         box-shadow: 0 12px 20px rgba(107, 124, 255, 0.2);
-        flex-shrink: 0;
       }
 
-      .label {
-        min-width: 0;
-      }
-
-      .title {
-        display: block;
-        font-size: clamp(1rem, 1.6vw, 1.14rem);
-        font-weight: 700;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .meta {
-        display: block;
-        font-size: 0.78rem;
-        color: var(--muted);
-        margin-top: 3px;
-      }
-
-      .chevron {
-        width: 30px;
-        height: 30px;
-        display: grid;
-        place-items: center;
-        border-radius: 50%;
+      .portal-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 9px;
+        border-radius: 999px;
         background: var(--chip);
         border: 1px solid var(--border);
+        color: var(--primary);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .portal-title {
+        margin: 0;
+        font-size: 1.1rem;
+        line-height: 1.4;
+      }
+
+      .portal-desc {
+        margin: 10px 0 0;
         color: var(--muted);
-        transition: transform 0.2s ease;
-        flex-shrink: 0;
+        line-height: 1.75;
+        font-size: 0.9rem;
       }
 
-      .children {
-        margin-left: clamp(18px, 2vw, 30px);
-        padding-top: 12px;
-        display: none;
-        position: relative;
+      .portal-link {
+        margin-top: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, rgba(107, 124, 255, 0.12), rgba(77, 208, 200, 0.08));
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+        margin-top: 18px;
       }
 
-      .children::before {
-        content: "";
-        position: absolute;
-        left: -12px;
-        top: 0;
-        width: 2px;
-        height: calc(100% - 10px);
-        background: linear-gradient(180deg, var(--line), transparent);
+      .portal-link:hover {
+        transform: translateY(-1px);
+        border-color: rgba(107, 124, 255, 0.35);
       }
 
-      .nest.is-open > .children {
-        display: block;
-      }
-
-      .nest.is-open > .node .chevron {
-        transform: rotate(180deg);
-      }
-
-      .node--root {
-        background: linear-gradient(135deg, rgba(107, 124, 255, 0.14), rgba(77, 208, 200, 0.08));
+      .portal-link span {
+        opacity: 0.8;
       }
 
       @media (max-width: 640px) {
@@ -337,14 +321,14 @@
           grid-template-columns: 1fr;
         }
 
-        .node {
-          padding: 14px 14px;
+        .portal-card {
+          padding: 16px;
         }
 
-        .icon {
+        .portal-icon {
           width: 38px;
           height: 38px;
-          font-size: 0.92rem;
+          font-size: 0.88rem;
         }
       }
     </style>
@@ -362,8 +346,8 @@
           <div class="eyebrow">Nested Glass Portal</div>
           <h1>一层一层，像套娃一样展开的内容世界</h1>
           <p class="subline">
-            这里不是单纯的列表，而是一组层级分明的栏目。每一层都像一个小盒子，嵌套在另一个盒子里，
-            让内容既有秩序，又带着一种轻盈的趣味感。
+            这里保留了玻璃质感的页面布局，但不再使用嵌套目录结构，而是以更适合展示多个栏目的方式来组织内容。
+            每个栏目都可以单独绑定一个网址，便于快速跳转到对应页面。
           </p>
 
           <div class="stats" aria-label="网站概览数据">
@@ -383,155 +367,85 @@
         </header>
 
         <section class="content" aria-label="栏目目录">
-          <div class="tree-wrap">
-            <div class="tree-head">
-              <h2>内容树</h2>
-              <span class="pill">可展开 / 多层级</span>
+          <div class="portal-panel">
+            <div class="panel-head">
+              <h2>栏目列表</h2>
+              <span class="pill">可扩展 / 可跳转</span>
             </div>
 
-            <div class="nest is-open">
-              <button class="node node--root" type="button">
-                <span class="node-main">
-                  <span class="icon">A</span>
-                  <span class="label">
-                    <span class="title">全站总览</span>
-                    <span class="meta">全部内容入口</span>
-                  </span>
-                </span>
-                <span class="chevron">⌃</span>
-              </button>
-
-              <div class="children">
-                <div class="nest is-open">
-                  <button class="node" type="button">
-                    <span class="node-main">
-                      <span class="icon">1</span>
-                      <span class="label">
-                        <span class="title">创意作品</span>
-                        <span class="meta">视觉 / 交互 / 体验</span>
-                      </span>
-                    </span>
-                    <span class="chevron">⌃</span>
-                  </button>
-
-                  <div class="children">
-                    <div class="nest is-open">
-                      <button class="node" type="button">
-                        <span class="node-main">
-                          <span class="icon">1.1</span>
-                          <span class="label">
-                            <span class="title">品牌系统</span>
-                            <span class="meta">Logo / 色彩 / 字体</span>
-                          </span>
-                        </span>
-                        <span class="chevron">⌃</span>
-                      </button>
-
-                      <div class="children">
-                        <div class="nest">
-                          <button class="node" type="button">
-                            <span class="node-main">
-                              <span class="icon">✦</span>
-                              <span class="label">
-                                <span class="title">徽标设计</span>
-                                <span class="meta">识别体系与视觉风格</span>
-                              </span>
-                            </span>
-                            <span class="chevron">⌃</span>
-                          </button>
-                        </div>
-
-                        <div class="nest">
-                          <button class="node" type="button">
-                            <span class="node-main">
-                              <span class="icon">✧</span>
-                              <span class="label">
-                                <span class="title">色彩策略</span>
-                                <span class="meta">柔和渐变与氛围布局</span>
-                              </span>
-                            </span>
-                            <span class="chevron">⌃</span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="nest">
-                      <button class="node" type="button">
-                        <span class="node-main">
-                          <span class="icon">1.2</span>
-                          <span class="label">
-                            <span class="title">动效实验</span>
-                            <span class="meta">微交互 / 过渡 / 反馈</span>
-                          </span>
-                        </span>
-                        <span class="chevron">⌃</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="nest">
-                  <button class="node" type="button">
-                    <span class="node-main">
-                      <span class="icon">2</span>
-                      <span class="label">
-                        <span class="title">技术研究</span>
-                        <span class="meta">前端 / 数据 / 智能</span>
-                      </span>
-                    </span>
-                    <span class="chevron">⌃</span>
-                  </button>
-
-                  <div class="children">
-                    <div class="nest">
-                      <button class="node" type="button">
-                        <span class="node-main">
-                          <span class="icon">2.1</span>
-                          <span class="label">
-                            <span class="title">前端框架</span>
-                            <span class="meta">组件化 / SEO / 性能优化</span>
-                          </span>
-                        </span>
-                        <span class="chevron">⌃</span>
-                      </button>
-                    </div>
-
-                    <div class="nest">
-                      <button class="node" type="button">
-                        <span class="node-main">
-                          <span class="icon">2.2</span>
-                          <span class="label">
-                            <span class="title">AI 生成</span>
-                            <span class="meta">内容生成 / 体验增强</span>
-                          </span>
-                        </span>
-                        <span class="chevron">⌃</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="nest">
-                  <button class="node" type="button">
-                    <span class="node-main">
-                      <span class="icon">3</span>
-                      <span class="label">
-                        <span class="title">生活记录</span>
-                        <span class="meta">日志 / 笔记 / 摄影</span>
-                      </span>
-                    </span>
-                    <span class="chevron">⌃</span>
-                  </button>
-                </div>
-              </div>
-            </div>
+            <div class="column-grid" id="columnGrid" aria-live="polite"></div>
           </div>
         </section>
       </main>
     </div>
 
     <script>
+      const columns = [
+        {
+          tag: '作品',
+          title: '创意作品',
+          summary: '视觉 / 交互 / 体验',
+          description: '展示平面设计、品牌方向、交互实验与创意案例，适合放置个人作品集或专题介绍。',
+          url: 'https://example.com/creative'
+        },
+        {
+          tag: '技术',
+          title: '技术研究',
+          summary: '前端 / 数据 / 智能',
+          description: '沉淀前端技术、AI 应用与开发实践，适合通过外链链接到文章、文档或项目页。',
+          url: 'https://example.com/tech'
+        },
+        {
+          tag: '生活',
+          title: '生活记录',
+          summary: '日志 / 笔记 / 摄影',
+          description: '整理日常记录、随笔、片段与摄影内容，打造一个更轻松、更真实的生活入口。',
+          url: 'https://example.com/life'
+        },
+        {
+          tag: '资源',
+          title: '工具库',
+          summary: '效率 / 资源 / 资料',
+          description: '放置实用工具、学习资料、参考链接和收藏夹，方便快速访问常用内容。',
+          url: 'https://example.com/resources'
+        },
+        {
+          tag: '项目',
+          title: '项目案例',
+          summary: '产品 / 方案 / 迭代',
+          description: '按项目维度整理案例与交付成果，用更清晰的方式呈现协作和设计思路。',
+          url: 'https://example.com/projects'
+        },
+        {
+          tag: '联系',
+          title: '关于我',
+          summary: '介绍 / 联系 / 社交',
+          description: '展示个人介绍、工作方式和联系入口，帮助访客更快了解你和你的创作方向。',
+          url: 'https://example.com/about'
+        }
+      ];
+
+      const columnGrid = document.getElementById('columnGrid');
+
+      const renderColumns = () => {
+        columnGrid.innerHTML = columns.map((item, index) => `
+          <article class="portal-card" aria-label="${item.title}">
+            <div class="portal-top">
+              <span class="portal-icon">${String(index + 1).padStart(2, '0')}</span>
+              <span class="portal-tag">${item.tag}</span>
+            </div>
+            <h3 class="portal-title">${item.title}</h3>
+            <p class="portal-desc">${item.summary}</p>
+            <p class="portal-desc">${item.description}</p>
+            <a class="portal-link" href="${item.url}" target="_blank" rel="noreferrer noopener">
+              访问栏目 <span>→</span>
+            </a>
+          </article>
+        `).join('');
+      };
+
+      renderColumns();
+
       const themeToggle = document.getElementById('themeToggle');
       const body = document.body;
 
@@ -548,20 +462,6 @@
       themeToggle.addEventListener('click', () => {
         const nextTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         applyTheme(nextTheme);
-      });
-
-      document.querySelectorAll('.nest').forEach((nest) => {
-        const button = nest.querySelector('.node');
-        const children = nest.querySelector('.children');
-
-        if (!button || !children) return;
-
-        button.addEventListener('click', () => {
-          const isOpen = nest.classList.toggle('is-open');
-          button.setAttribute('aria-expanded', String(isOpen));
-        });
-
-        button.setAttribute('aria-expanded', String(nest.classList.contains('is-open')));
       });
     </script>
   </body>
