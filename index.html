@@ -1,4 +1,568 @@
-<!-- 相对路径，推荐，迁移域名不用改 -->
-<a href="zh-cn/password.txt" download><!-- download.txt -->
-<!-- 绝对完整URL -->
-<a href="https://pcplayergame.github.io/files/password.txt" download>下载</a>
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nested Glass Portal</title>
+    <style>
+      :root {
+        --bg-1: #edf3ff;
+        --bg-2: #f7f2ff;
+        --bg-3: #fff9f0;
+        --glass: rgba(255, 255, 255, 0.52);
+        --glass-strong: rgba(255, 255, 255, 0.7);
+        --border: rgba(110, 130, 170, 0.2);
+        --shadow: rgba(95, 103, 146, 0.18);
+        --text: #1f2430;
+        --muted: #5f6f86;
+        --primary: #6b7cff;
+        --primary-2: #8d63ff;
+        --accent: #4dd0c8;
+        --chip: rgba(107, 124, 255, 0.12);
+        --line: rgba(99, 112, 146, 0.2);
+      }
+
+      body[data-theme="dark"] {
+        --bg-1: #0d1220;
+        --bg-2: #151d30;
+        --bg-3: #111827;
+        --glass: rgba(16, 22, 35, 0.62);
+        --glass-strong: rgba(26, 30, 43, 0.82);
+        --border: rgba(163, 177, 207, 0.14);
+        --shadow: rgba(5, 8, 15, 0.46);
+        --text: #edf4ff;
+        --muted: #a8b6d1;
+        --primary: #8ea2ff;
+        --primary-2: #b39dff;
+        --accent: #68e0d6;
+        --chip: rgba(142, 162, 255, 0.12);
+        --line: rgba(163, 177, 207, 0.14);
+      }
+
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: Inter, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(109, 123, 255, 0.22), transparent 28%),
+          radial-gradient(circle at bottom right, rgba(77, 208, 200, 0.18), transparent 30%),
+          linear-gradient(135deg, var(--bg-1), var(--bg-2) 48%, var(--bg-3));
+        transition: background 0.3s ease, color 0.3s ease;
+      }
+
+      .page {
+        min-height: 100%;
+        padding: 42px 18px 80px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .shell {
+        width: min(1100px, 100%);
+        position: relative;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 16px;
+      }
+
+      .theme-button {
+        border: 1px solid var(--border);
+        background: var(--glass);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        color: var(--text);
+        border-radius: 999px;
+        padding: 10px 18px;
+        cursor: pointer;
+        box-shadow: 0 10px 30px var(--shadow);
+        transition: transform 0.2s ease, background 0.2s ease;
+        font-weight: 600;
+      }
+
+      .theme-button:hover {
+        transform: translateY(-1px);
+      }
+
+      .hero {
+        background: var(--glass);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px var(--shadow);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        padding: 30px clamp(20px, 4vw, 40px);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before,
+      .hero::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(12px);
+      }
+
+      .hero::before {
+        width: 220px;
+        height: 220px;
+        right: -40px;
+        top: -60px;
+        background: rgba(109, 123, 255, 0.18);
+      }
+
+      .hero::after {
+        width: 200px;
+        height: 200px;
+        left: -40px;
+        bottom: -60px;
+        background: rgba(77, 208, 200, 0.15);
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--chip);
+        border: 1px solid var(--border);
+        padding: 7px 12px;
+        border-radius: 999px;
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 18px 0 10px;
+        font-size: clamp(2.3rem, 5vw, 4.2rem);
+        line-height: 1.05;
+        letter-spacing: -0.05em;
+      }
+
+      .subline {
+        margin: 0;
+        max-width: 720px;
+        color: var(--muted);
+        font-size: clamp(0.98rem, 1.7vw, 1.14rem);
+        line-height: 1.8;
+      }
+
+      .stats {
+        margin-top: 26px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(120px, 1fr));
+        gap: 12px;
+      }
+
+      .stat {
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 16px 18px;
+      }
+
+      .stat strong {
+        display: block;
+        font-size: clamp(1.15rem, 2vw, 1.6rem);
+        margin-bottom: 4px;
+      }
+
+      .stat span {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      .content {
+        margin-top: 26px;
+      }
+
+      .tree-wrap {
+        background: var(--glass);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        box-shadow: 0 18px 40px var(--shadow);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        padding: 18px 18px 22px;
+      }
+
+      .tree-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 8px 10px 18px;
+      }
+
+      .tree-head h2 {
+        margin: 0;
+        font-size: 1.06rem;
+        letter-spacing: 0.02em;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 11px;
+        border-radius: 999px;
+        background: var(--chip);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 600;
+      }
+
+      .nest {
+        position: relative;
+      }
+
+      .nest + .nest {
+        margin-top: 12px;
+      }
+
+      .node {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 18px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        border-radius: 20px;
+        cursor: pointer;
+        text-align: left;
+        transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.02);
+      }
+
+      .node:hover {
+        transform: translateY(-1px);
+        border-color: rgba(107, 124, 255, 0.35);
+      }
+
+      .node-main {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+      }
+
+      .icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        display: grid;
+        place-items: center;
+        color: white;
+        font-size: 1.05rem;
+        font-weight: 700;
+        box-shadow: 0 12px 20px rgba(107, 124, 255, 0.2);
+        flex-shrink: 0;
+      }
+
+      .label {
+        min-width: 0;
+      }
+
+      .title {
+        display: block;
+        font-size: clamp(1rem, 1.6vw, 1.14rem);
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .meta {
+        display: block;
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 3px;
+      }
+
+      .chevron {
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--chip);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        transition: transform 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .children {
+        margin-left: clamp(18px, 2vw, 30px);
+        padding-top: 12px;
+        display: none;
+        position: relative;
+      }
+
+      .children::before {
+        content: "";
+        position: absolute;
+        left: -12px;
+        top: 0;
+        width: 2px;
+        height: calc(100% - 10px);
+        background: linear-gradient(180deg, var(--line), transparent);
+      }
+
+      .nest.is-open > .children {
+        display: block;
+      }
+
+      .nest.is-open > .node .chevron {
+        transform: rotate(180deg);
+      }
+
+      .node--root {
+        background: linear-gradient(135deg, rgba(107, 124, 255, 0.14), rgba(77, 208, 200, 0.08));
+      }
+
+      @media (max-width: 640px) {
+        .stats {
+          grid-template-columns: 1fr;
+        }
+
+        .node {
+          padding: 14px 14px;
+        }
+
+        .icon {
+          width: 38px;
+          height: 38px;
+          font-size: 0.92rem;
+        }
+      }
+    </style>
+  </head>
+  <body data-theme="light">
+    <div class="page">
+      <main class="shell">
+        <div class="topbar">
+          <button class="theme-button" id="themeToggle" type="button" aria-label="切换主题">
+            🌙 深色模式
+          </button>
+        </div>
+
+        <header class="hero">
+          <div class="eyebrow">Nested Glass Portal</div>
+          <h1>一层一层，像套娃一样展开的内容世界</h1>
+          <p class="subline">
+            这里不是单纯的列表，而是一组层级分明的栏目。每一层都像一个小盒子，嵌套在另一个盒子里，
+            让内容既有秩序，又带着一种轻盈的趣味感。
+          </p>
+
+          <div class="stats" aria-label="网站概览数据">
+            <div class="stat">
+              <strong>12</strong>
+              <span>主题栏目</span>
+            </div>
+            <div class="stat">
+              <strong>04</strong>
+              <span>设计层级</span>
+            </div>
+            <div class="stat">
+              <strong>∞</strong>
+              <span>扩展空间</span>
+            </div>
+          </div>
+        </header>
+
+        <section class="content" aria-label="栏目目录">
+          <div class="tree-wrap">
+            <div class="tree-head">
+              <h2>内容树</h2>
+              <span class="pill">可展开 / 多层级</span>
+            </div>
+
+            <div class="nest is-open">
+              <button class="node node--root" type="button">
+                <span class="node-main">
+                  <span class="icon">A</span>
+                  <span class="label">
+                    <span class="title">全站总览</span>
+                    <span class="meta">全部内容入口</span>
+                  </span>
+                </span>
+                <span class="chevron">⌃</span>
+              </button>
+
+              <div class="children">
+                <div class="nest is-open">
+                  <button class="node" type="button">
+                    <span class="node-main">
+                      <span class="icon">1</span>
+                      <span class="label">
+                        <span class="title">创意作品</span>
+                        <span class="meta">视觉 / 交互 / 体验</span>
+                      </span>
+                    </span>
+                    <span class="chevron">⌃</span>
+                  </button>
+
+                  <div class="children">
+                    <div class="nest is-open">
+                      <button class="node" type="button">
+                        <span class="node-main">
+                          <span class="icon">1.1</span>
+                          <span class="label">
+                            <span class="title">品牌系统</span>
+                            <span class="meta">Logo / 色彩 / 字体</span>
+                          </span>
+                        </span>
+                        <span class="chevron">⌃</span>
+                      </button>
+
+                      <div class="children">
+                        <div class="nest">
+                          <button class="node" type="button">
+                            <span class="node-main">
+                              <span class="icon">✦</span>
+                              <span class="label">
+                                <span class="title">徽标设计</span>
+                                <span class="meta">识别体系与视觉风格</span>
+                              </span>
+                            </span>
+                            <span class="chevron">⌃</span>
+                          </button>
+                        </div>
+
+                        <div class="nest">
+                          <button class="node" type="button">
+                            <span class="node-main">
+                              <span class="icon">✧</span>
+                              <span class="label">
+                                <span class="title">色彩策略</span>
+                                <span class="meta">柔和渐变与氛围布局</span>
+                              </span>
+                            </span>
+                            <span class="chevron">⌃</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="nest">
+                      <button class="node" type="button">
+                        <span class="node-main">
+                          <span class="icon">1.2</span>
+                          <span class="label">
+                            <span class="title">动效实验</span>
+                            <span class="meta">微交互 / 过渡 / 反馈</span>
+                          </span>
+                        </span>
+                        <span class="chevron">⌃</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="nest">
+                  <button class="node" type="button">
+                    <span class="node-main">
+                      <span class="icon">2</span>
+                      <span class="label">
+                        <span class="title">技术研究</span>
+                        <span class="meta">前端 / 数据 / 智能</span>
+                      </span>
+                    </span>
+                    <span class="chevron">⌃</span>
+                  </button>
+
+                  <div class="children">
+                    <div class="nest">
+                      <button class="node" type="button">
+                        <span class="node-main">
+                          <span class="icon">2.1</span>
+                          <span class="label">
+                            <span class="title">前端框架</span>
+                            <span class="meta">组件化 / SEO / 性能优化</span>
+                          </span>
+                        </span>
+                        <span class="chevron">⌃</span>
+                      </button>
+                    </div>
+
+                    <div class="nest">
+                      <button class="node" type="button">
+                        <span class="node-main">
+                          <span class="icon">2.2</span>
+                          <span class="label">
+                            <span class="title">AI 生成</span>
+                            <span class="meta">内容生成 / 体验增强</span>
+                          </span>
+                        </span>
+                        <span class="chevron">⌃</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="nest">
+                  <button class="node" type="button">
+                    <span class="node-main">
+                      <span class="icon">3</span>
+                      <span class="label">
+                        <span class="title">生活记录</span>
+                        <span class="meta">日志 / 笔记 / 摄影</span>
+                      </span>
+                    </span>
+                    <span class="chevron">⌃</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const themeToggle = document.getElementById('themeToggle');
+      const body = document.body;
+
+      const applyTheme = (theme) => {
+        const isDark = theme === 'dark';
+        body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        themeToggle.textContent = isDark ? '☀️ 浅色模式' : '🌙 深色模式';
+        localStorage.setItem('theme', theme);
+      };
+
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      applyTheme(savedTheme);
+
+      themeToggle.addEventListener('click', () => {
+        const nextTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+      });
+
+      document.querySelectorAll('.nest').forEach((nest) => {
+        const button = nest.querySelector('.node');
+        const children = nest.querySelector('.children');
+
+        if (!button || !children) return;
+
+        button.addEventListener('click', () => {
+          const isOpen = nest.classList.toggle('is-open');
+          button.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        button.setAttribute('aria-expanded', String(nest.classList.contains('is-open')));
+      });
+    </script>
+  </body>
+</html>
